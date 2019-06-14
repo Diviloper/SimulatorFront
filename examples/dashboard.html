@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <title>
-        Paper Dashboard 2 by Creative Tim
+        Simulació BEST
     </title>
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
           name='viewport'/>
@@ -32,7 +32,7 @@
           Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
       -->
         <div class="logo">
-            <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+            <a href="https://www.best.com.es/es/" class="simple-text logo-normal">
                 <img src="../assets/img/logo-small.png">
             </a>
         </div>
@@ -89,7 +89,7 @@
                             <span class="navbar-toggler-bar bar3"></span>
                         </button>
                     </div>
-                    <a class="navbar-brand" href="#pablo">Estudi de l'evolució de les cues de la terminal BEST</a>
+                    <p class="navbar-brand">Estudi de l'evolució de les cues de la terminal BEST</p>
                 </div>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
                         aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,7 +118,7 @@
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
                                         <p class="card-category">Temps d'espera promig</p>
-                                        <p class="card-title">130s
+                                        <p id="mean_time" class="card-title">130s
                                         <p>
                                     </div>
                                 </div>
@@ -140,7 +140,7 @@
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
                                         <p class="card-category">Percentatge de camions encuats</p>
-                                        <p class="card-title">56%
+                                        <p id="queue_percentage" class="card-title">56%
                                         <p>
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
                                         <p class="card-category">Temps màxim esperat</p>
-                                        <p class="card-title">256s
+                                        <p id="max_time" class="card-title">256s
                                         <p>
                                     </div>
                                 </div>
@@ -172,7 +172,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6" onclick="theFunction()">
+                <div class="col-lg-3 col-md-6 col-sm-6" onclick="getResults()">
                     <div id="simulate" class="card card-stats">
                         <div class="card-body ">
                             <div class="row">

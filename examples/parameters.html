@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <title>
-        Paper Dashboard 2 by Creative Tim
+        Simulació BEST
     </title>
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
           name='viewport'/>
@@ -19,6 +19,7 @@
     <link href="../assets/css/paper-dashboard.css?v=2.0.0" rel="stylesheet"/>
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link href="../assets/demo/demo.css" rel="stylesheet"/>
+    <script src="../assets/js/httpService.js"></script>
 </head>
 
 <body class="">
@@ -28,7 +29,7 @@
           Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
       -->
         <div class="logo">
-            <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+            <a href="https://www.best.com.es/es/" class="simple-text logo-normal">
                 <img src="../assets/img/logo-small.png">
             </a>
         </div>
@@ -85,7 +86,7 @@
                             <span class="navbar-toggler-bar bar3"></span>
                         </button>
                     </div>
-                    <a class="navbar-brand" href="#pablo">Estudi de l'evolució de les cues de la terminal BEST</a>
+                    <p class="navbar-brand">Estudi de l'evolució de les cues de la terminal BEST</p>
                 </div>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
                         aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,13 +115,15 @@
                                     <div class="col-md-6 pr-1">
                                         <div class="form-group">
                                             <label>Nombre de grues (24-30)</label>
-                                            <input type="number" min="24" max="30" class="form-control" placeholder="24">
+                                            <input id="n_cranes" type="number" min="24" max="30" class="form-control"
+                                                   placeholder="24" value="24">
                                         </div>
                                     </div>
                                     <div class="col-md-6 pl-1">
                                         <div class="form-group">
                                             <label>Duració de la simulació (segons)</label>
-                                            <input type="number" class="form-control" placeholder="84400" value="84400">
+                                            <input id="max_time" type="number" class="form-control" placeholder="84400"
+                                                   value="84400">
                                         </div>
                                     </div>
                                 </div>
@@ -130,14 +133,15 @@
                                     <div class="col-md-6 pr-1">
                                         <div class="form-group">
                                             <label>Alfa</label>
-                                            <input type="number" step=".0001" class="form-control" placeholder="1.3806" value="1.3806">
+                                            <input id="alpha_A" type="number" step=".0001" class="form-control"
+                                                   placeholder="1.3806" value="1.3806">
                                         </div>
                                     </div>
                                     <div class="col-md-6 pl-1">
                                         <div class="form-group">
                                             <label>Beta</label>
-                                            <input type="number" step=".0001" class="form-control" placeholder="64.437"
-                                                   value="64.437">
+                                            <input id="beta_A" type="number" step=".0001" class="form-control"
+                                                   placeholder="64.437" value="64.437">
                                         </div>
                                     </div>
                                 </div>
@@ -147,14 +151,15 @@
                                     <div class="col-md-6 pr-1">
                                         <div class="form-group">
                                             <label>Mitjana</label>
-                                            <input type="number" step=".0001" class="form-control" placeholder="2.8501" value="2.8501">
+                                            <input id="mean_PG" type="number" step=".0001" class="form-control"
+                                                   placeholder="2.8501" value="2.8501">
                                         </div>
                                     </div>
                                     <div class="col-md-6 pl-1">
                                         <div class="form-group">
                                             <label>Sigma</label>
-                                            <input type="number" step=".0001" class="form-control" placeholder="1.2619"
-                                                   value="1.2619">
+                                            <input id="sigma_PG" type="number" step=".0001" class="form-control"
+                                                   placeholder="1.2619" value="1.2619">
                                         </div>
                                     </div>
                                 </div>
@@ -164,14 +169,15 @@
                                     <div class="col-md-6 pr-1">
                                         <div class="form-group">
                                             <label>Mitjana</label>
-                                            <input type="number" step=".0001" class="form-control" placeholder="4.2616" value="4.2616">
+                                            <input id="mean_MG" type="number" step=".0001" class="form-control"
+                                                   placeholder="4.2616" value="4.2616">
                                         </div>
                                     </div>
                                     <div class="col-md-6 pl-1">
                                         <div class="form-group">
                                             <label>Sigma</label>
-                                            <input type="number" step=".00001" class="form-control" placeholder="0.5821"
-                                                   value="0.58218">
+                                            <input id="sigma_MG" type="number" step=".00001" class="form-control"
+                                                   placeholder="0.5821" value="0.58218">
                                         </div>
                                     </div>
                                 </div>
@@ -181,21 +187,24 @@
                                     <div class="col-md-6 pr-1">
                                         <div class="form-group">
                                             <label>Mitjana</label>
-                                            <input type="number" step=".0001" class="form-control" placeholder="7.0561" value="7.0561">
+                                            <input id="mean_S" type="number" step=".0001" class="form-control"
+                                                   placeholder="7.0561" value="7.0561">
                                         </div>
                                     </div>
                                     <div class="col-md-6 pl-1">
                                         <div class="form-group">
                                             <label>Sigma</label>
-                                            <input type="number" step=".00001" class="form-control" placeholder="0.4701"
-                                                   value="0.47002">
+                                            <input id="sigma_S" type="number" step=".00001" class="form-control"
+                                                   placeholder="0.4701" value="0.47002">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="row">
                                     <div class="update ml-auto mr-auto">
-                                        <button type="submit" onclick="changeParameters()" class="btn btn-primary btn-round">Canviar parametres</button>
+                                        <button type="button" onclick="changeParameters()" class="btn btn-primary btn-round">Canviar
+                                            parametres
+                                        </button>
                                     </div>
                                 </div>
                             </form>
@@ -210,13 +219,15 @@
                     <nav class="footer-nav">
                         <ul>
                             <li>
-                                <a href="https://ca.wikipedia.org/wiki/Espies_de_veritat" target="_blank">Totally Spies!</a>
+                                <a href="https://ca.wikipedia.org/wiki/Espies_de_veritat" target="_blank">Totally
+                                    Spies!</a>
                             </li>
                             <li>
                                 <a href="https://github.com/QuimLaz/CoreSIM" target="_blank">GitHub</a>
                             </li>
                             <li>
-                                <a href="https://inlab.fib.upc.edu/sites/default/files/styles/large/public/field/image/jordimontero2.png" target="_blank">MNTY</a>
+                                <a href="https://inlab.fib.upc.edu/sites/default/files/styles/large/public/field/image/jordimontero2.png"
+                                   target="_blank">MNTY</a>
                             </li>
                         </ul>
                     </nav>
