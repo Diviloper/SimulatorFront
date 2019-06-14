@@ -1,7 +1,7 @@
 function changeParameters() {
     const formData = {
         'n_cranes': document.getElementById('n_cranes').value,
-        'max_time': document.getElementById('max_time').value,
+        'seed': document.getElementById('seed').value,
         'alpha_A': document.getElementById('alpha_A').value,
         'beta_A': document.getElementById('beta_A').value,
         'mean_PG': document.getElementById('mean_PG').value,
@@ -11,6 +11,7 @@ function changeParameters() {
         'mean_S': document.getElementById('mean_S').value,
         'sigma_S': document.getElementById('sigma_S').value
     };
+    window.localStorage.setItem('formData', JSON.stringify(formData));
     console.log(formData);
     $.ajax({
         url: 'http://localhost:5000/post',
@@ -21,6 +22,23 @@ function changeParameters() {
         data: JSON.stringify(formData),
         dataType: 'json',
     });
+}
+
+function fillParameters() {
+    const formData = window.localStorage.getItem('formData');
+    if(formData !== null){
+        const values = JSON.parse(formData);
+        document.getElementById('n_cranes').value = values['n_cranes'];
+        document.getElementById('seed').value = values['seed'];
+        document.getElementById('alpha_A').value = values['alpha_A'];
+        document.getElementById('beta_A').value = values['beta_A'];
+        document.getElementById('mean_PG').value = values['mean_PG'];
+        document.getElementById('sigma_PG').value = values['sigma_PG'];
+        document.getElementById('mean_MG').value = values['mean_MG'];
+        document.getElementById('sigma_MG').value = values['sigma_MG'];
+        document.getElementById('mean_S').value = values['mean_S'];
+        document.getElementById('sigma_S').value = values['sigma_S'];
+    }
 }
 
 function getResults() {
