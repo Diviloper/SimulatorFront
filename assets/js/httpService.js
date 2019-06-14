@@ -1,69 +1,50 @@
 function changeParameters() {
     const formData = {
-        'n_cranes': document.getElementById('n_cranes').value,
-        'seed': document.getElementById('seed').value,
-        'alpha_A': document.getElementById('alpha_A').value,
-        'beta_A': document.getElementById('beta_A').value,
-        'mean_PG': document.getElementById('mean_PG').value,
-        'sigma_PG': document.getElementById('sigma_PG').value,
-        'mean_MG': document.getElementById('mean_MG').value,
-        'sigma_MG': document.getElementById('sigma_MG').value,
-        'mean_S': document.getElementById('mean_S').value,
-        'sigma_S': document.getElementById('sigma_S').value
+        'n_cranes': parseInt(document.getElementById('n_cranes').value),
+        'seed': parseInt(document.getElementById('seed').value),
+        'alpha_A': parseFloat(document.getElementById('alpha_A').value),
+        'beta_A': parseFloat(document.getElementById('beta_A').value),
+        'mean_PG': parseFloat(document.getElementById('mean_PG').value),
+        'sigma_PG': parseFloat(document.getElementById('sigma_PG').value),
+        'mean_MG': parseFloat(document.getElementById('mean_MG').value),
+        'sigma_MG': parseFloat(document.getElementById('sigma_MG').value),
+        'mean_S': parseFloat(document.getElementById('mean_S').value),
+        'sigma_S': parseFloat(document.getElementById('sigma_S').value)
     };
-    window.localStorage.setItem('formData', JSON.stringify(formData));
-    console.log(formData);
+    localStorage.setItem('formData', JSON.stringify(formData));
     $.ajax({
-        url: 'http://localhost:5000/post',
+        url: 'http://127.0.0.1:8000/simulation',
         method: 'POST',
         success: function (response) {
-            window.localStorage.setItem('simulation_id', response['simulation_id'])
+            localStorage.setItem('simulation_id', response)
         },
         data: JSON.stringify(formData),
-        dataType: 'json',
+        contentType: 'application/json',
     });
 }
 
-function fillParameters() {
-    const formData = window.localStorage.getItem('formData');
-    if(formData !== null){
-        const values = JSON.parse(formData);
-        document.getElementById('n_cranes').value = values['n_cranes'];
-        document.getElementById('seed').value = values['seed'];
-        document.getElementById('alpha_A').value = values['alpha_A'];
-        document.getElementById('beta_A').value = values['beta_A'];
-        document.getElementById('mean_PG').value = values['mean_PG'];
-        document.getElementById('sigma_PG').value = values['sigma_PG'];
-        document.getElementById('mean_MG').value = values['mean_MG'];
-        document.getElementById('sigma_MG').value = values['sigma_MG'];
-        document.getElementById('mean_S').value = values['mean_S'];
-        document.getElementById('sigma_S').value = values['sigma_S'];
-    }
-}
-
 function getResults() {
-    let id = window.localStorage.getItem('simulation_id');
+    let id = localStorage.getItem('simulation_id');
     if (id === null) {
         changeParameters();
-        while(id === null) id = window.localStorage.getItem('simulation_id');
+        while(id === null) id = localStorage.getItem('simulation_id');
     } else {
         $.ajax({
-            url: `http://localhost:5000/results/${id}`,
+            url: `http://localhost:8000/simulation/${id}`,
             method: 'GET',
             success: function (response) {
-                console.log(response);
 
-                document.getElementById('mean_time').innerText = response['mean_time'] + 's';
-                document.getElementById('queue_percentage').innerText = response['queue_percentage'] + '%';
-                document.getElementById('max_time').innerText = response['max_time'] + 's';
+                document.getElementById('mean_time').innerText = parseInt(response['mean_time']) + 's';
+                document.getElementById('queue_percentage').innerText = parseInt(response['percent_trucks_in_queue']) + '%';
+                document.getElementById('max_time').innerText = response['max_time_in_queue'] + 's';
 
                 ctx = document.getElementById('chartHours').getContext("2d");
-                matrix = response['queue_matrix'];
+                matrix = JSON.parse(response['n_trucks_in_queue']);
                 matrix = aggregate(matrix);
 
                 datasets = [];
-                for (let i = 0; i < matrix.size(); ++i) {
-                    datasets.add({
+                for (let i = 0; i < matrix.length; ++i) {
+                    datasets.push({
                         borderColor: getColor(i),
                         backgroundColor: getColor(i),
                         pointRadius: 0,
@@ -129,7 +110,7 @@ function getResults() {
 }
 
 function aggregate(matrix) {
-    for (let i = 1; i < matrix.size(); ++i) {
+    for (let i = 1; i < matrix.length; ++i) {
         for (let j = 0; j < 24; ++j) {
             matrix[i][j] += matrix[i - 1][j];
         }
