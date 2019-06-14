@@ -24,6 +24,16 @@ function changeParameters() {
         'sigma_S': document.getElementById('sigma_S').value
     };
     console.log(formData);
+    $.ajax({
+        url: 'http://localhost:5000/post',
+        method: 'POST',
+        success: function (response) {
+            console.log(response);
+            return response;
+        },
+        data: JSON.stringify(formData),
+        dataType: 'json',
+    });
 }
 
 function getResults() {
