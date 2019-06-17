@@ -16,7 +16,8 @@ function changeParameters() {
         url: 'http://127.0.0.1:8000/simulation',
         method: 'POST',
         success: function (response) {
-            localStorage.setItem('simulation_id', response)
+            localStorage.setItem('simulation_id', response);
+            window.location.href = '/SimulatorFront/examples/dashboard.html';
         },
         data: JSON.stringify(formData),
         contentType: 'application/json',
@@ -26,17 +27,33 @@ function changeParameters() {
 function getResults() {
     let id = localStorage.getItem('simulation_id');
     if (id === null) {
-        changeParameters();
-        while(id === null) id = localStorage.getItem('simulation_id');
+        window.location.href = '/SimulatorFront/examples/parameters.html';
+        alert('Selecciona els paràmteres amb els que executar la simulació')
     } else {
         $.ajax({
             url: `http://localhost:8000/simulation/${id}`,
             method: 'GET',
             success: function (response) {
+                const meanTime = parseInt(response['mean_time']);
+                if (meanTime > 3600) {
+                    const hours = Math.floor(meanTime / 3600);
+                    const minutes = Math.floor((meanTime % 3600) / 60);
+                    const secs = Math.floor(meanTime % 60);
+                    document.getElementById('mean_time').innerText = hours + 'h ' + minutes + 'm ' + secs + 's';
+                }
+                if (meanTime > 60) document.getElementById('mean_time').innerText = Math.floor(meanTime / 60) + 'm ' + meanTime % 60 + 's';
+                else document.getElementById('mean_time').innerText = meanTime + 's';
 
-                document.getElementById('mean_time').innerText = parseInt(response['mean_time']) + 's';
                 document.getElementById('queue_percentage').innerText = parseInt(response['percent_trucks_in_queue']) + '%';
-                document.getElementById('max_time').innerText = response['max_time_in_queue'] + 's';
+
+                const maxTime = response['max_time_in_queue'];
+                if (maxTime > 3600) {
+                    const hours = Math.floor(maxTime / 3600);
+                    const minutes = Math.floor((maxTime % 3600) / 60);
+                    const secs = Math.floor(maxTime % 60);
+                    document.getElementById('max_time').innerText = hours + 'h ' + minutes + 'm ' + secs + 's';
+                } else if (maxTime > 60) document.getElementById('max_time').innerText = Math.floor(maxTime / 60) + 'm ' + maxTime % 60 + 's';
+                else document.getElementById('max_time').innerText = maxTime + 's';
 
                 ctx = document.getElementById('chartHours').getContext("2d");
                 matrix = JSON.parse(response['n_trucks_in_queue']);
@@ -67,7 +84,7 @@ function getResults() {
                         },
 
                         tooltips: {
-                            enabled: false
+                            enabled: true
                         },
 
                         scales: {
@@ -109,9 +126,69 @@ function getResults() {
     }
 }
 
+function downloadFiles() {
+    let id = localStorage.getItem('simulation_id');
+    $.ajax({
+        url: `http://localhost:8000/simulation/download/${id}`,
+        method: 'GET',
+        success: function (response) {
+            const file = new Blob([response]);
+            let indexCPM = response.indexOf('CuesPerMinut.csv');
+            let indexCEM = response.indexOf('CamionsEsperantPerMinut.csv');
+            let indexTEC = response.indexOf('TempsEsperatPerCamio.csv');
+            let indexDRS = response.indexOf('DadesResultat.csv');
+            let indexTRC = response.indexOf('Traca.txt');
+
+            let CPM = new Blob([response.substring(indexCPM, indexCEM)]);
+            let CEM = new Blob([response.substring(indexCEM, indexTEC)]);
+            let TEC = new Blob([response.substring(indexTEC, indexDRS)]);
+            let DRS = new Blob([response.substring(indexDRS, indexTRC)]);
+            let TRC = new Blob([response.substring(indexTRC)]);
+
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(CPM);
+            link.download = 'CuesPerMinut.csv';
+            link.click();
+            link.href = URL.createObjectURL(CEM);
+            link.download = 'CamionsEsperantPerMinut.csv';
+            link.click();
+            link.href = URL.createObjectURL(TEC);
+            link.download = 'TempsEsperatPerCamio.csv';
+            link.click();
+            link.href = URL.createObjectURL(DRS);
+            link.download = 'DadesResultat.csv';
+            link.click();
+            link.href = URL.createObjectURL(TRC);
+            link.download = 'Traca.txt';
+            link.click();
+        },
+    });
+}
+
+
+function fillParameters() {
+    let data = localStorage.getItem('formData');
+    if (data !== null) {
+        data = JSON.parse(data);
+        document.getElementById('n_cranes').value = data['n_cranes'];
+        document.getElementById('seed').value = data['seed'];
+        document.getElementById('alpha_A').value = data['alpha_A'];
+        document.getElementById('beta_A').value = data['beta_A'];
+        document.getElementById('mean_PG').value = data['mean_PG'];
+        document.getElementById('sigma_PG').value = data['sigma_PG'];
+        document.getElementById('mean_MG').value = data['mean_MG'];
+        document.getElementById('sigma_MG').value = data['sigma_MG'];
+        document.getElementById('mean_S').value = data['mean_S'];
+        document.getElementById('sigma_S').value = data['sigma_S'];
+    }
+}
+
 function aggregate(matrix) {
+    for (let i = 0; i < matrix.length; ++i) {
+        matrix[i].splice(0, 0, 0);
+    }
     for (let i = 1; i < matrix.length; ++i) {
-        for (let j = 0; j < 24; ++j) {
+        for (let j = 0; j < 25; ++j) {
             matrix[i][j] += matrix[i - 1][j];
         }
     }
